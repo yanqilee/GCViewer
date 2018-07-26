@@ -2,6 +2,7 @@
 set -ev
 echo "TRAVIS_PULL_REQUEST = ${TRAVIS_PULL_REQUEST}"
 echo "TRAVIS_BRANCH = ${TRAVIS_BRANCH}"
+echo "TRAVIS_JDK_VERSION = ${TRAVIS_JDK_VERSION}"
 if [ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_BRANCH}" = "develop" ]
 then
   echo build and deploy
