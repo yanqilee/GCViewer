@@ -649,6 +649,15 @@ public abstract class AbstractGCEvent<T extends AbstractGCEvent<T>> implements S
         public static final Type UJL_SHEN_CONCURRENT_CONC_UPDATE_REFS = new Type("Concurrent update references", Generation.TENURED, Concurrency.CONCURRENT, GcPattern.GC_MEMORY_PAUSE);
         public static final Type UJL_SHEN_CONCURRENT_PRECLEANING = new Type("Concurrent precleaning", Generation.TENURED, Concurrency.CONCURRENT, GcPattern.GC_MEMORY_PAUSE);
 
+        // unified jvm logging zgc event types
+        public static final Type UJL_ZGC_RELOCATED_START = new Type("Pause Relocate Start", Generation.TENURED, Concurrency.SERIAL, GcPattern.GC_PAUSE);
+        public static final Type UJL_ZGC_MARK_START = new Type("Pause Mark Start", Generation.TENURED, Concurrency.SERIAL, GcPattern.GC_PAUSE);
+        public static final Type UJL_ZGC_MARK_END = new Type("Pause Mark End", Generation.TENURED, Concurrency.SERIAL, GcPattern.GC_PAUSE);
+        public static final Type UJL_ZGC_GARBAGE_COLLECTION_WARMUP = new Type("Garbage Collection (Warmup)", Generation.TENURED, Concurrency.SERIAL, GcPattern.GC_MEMORY);
+        public static final Type UJL_ZGC_GARBAGE_COLLECTION_ALLOCATION_RATE = new Type("Garbage Collection (Allocation Rate)", Generation.TENURED, Concurrency.SERIAL, GcPattern.GC_MEMORY);
+        public static final Type UJL_ZGC_GARBAGE_COLLECTION_METADATA_GC_THRESHOLD = new Type("Garbage Collection (Metadata GC Threshold)", Generation.TENURED, Concurrency.SERIAL, GcPattern.GC_MEMORY);
+        public static final Type UJL_ZGC_GARBAGE_COLLECTION_PROACTIVE = new Type("Garbage Collection (Proactive)", Generation.TENURED, Concurrency.SERIAL, GcPattern.GC_MEMORY);
+
         // IBM Types
         // TODO: are scavenge always young only??
         public static final Type IBM_AF = new Type("af", Generation.YOUNG);

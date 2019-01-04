@@ -72,7 +72,7 @@ public class DataReaderUnifiedJvmLogging extends AbstractDataReader {
     private static final int GROUP_HEAP_REGION_SIZE = 1;
 
     private static final String PATTERN_PAUSE_STRING = "([0-9]+[.,][0-9]+)ms";
-    private static final String PATTERN_MEMORY_STRING = "(([0-9]+)([BKMG])->([0-9]+)([BKMG])\\(([0-9]+)([BKMG])\\))";
+    private static final String PATTERN_MEMORY_STRING = "(([0-9]+)([BKMG])(?:\\([0-9]+%\\))?->([0-9]+)([BKMG])\\(([0-9]+)([BKMG%])\\))";
 
     // Input: 1.070ms
     // Group 1: 1.070
@@ -122,9 +122,10 @@ public class DataReaderUnifiedJvmLogging extends AbstractDataReader {
     private static final String TAG_GC_START = "gc,start";
     private static final String TAG_GC_HEAP = "gc,heap";
     private static final String TAG_GC_METASPACE = "gc,metaspace";
+    private static final String TAG_GC_PHASES = "gc,phases";
 
     /** list of strings, that must be part of the gc log line to be considered for parsing */
-    private static final List<String> INCLUDE_STRINGS = Arrays.asList("[gc ", "[gc]", "[" + TAG_GC_START, "[" + TAG_GC_HEAP, "[" + TAG_GC_METASPACE);
+    private static final List<String> INCLUDE_STRINGS = Arrays.asList("[gc ", "[gc]", "[" + TAG_GC_START, "[" + TAG_GC_HEAP, "[" + TAG_GC_METASPACE, "[" + TAG_GC_PHASES);
     /** list of strings, that target gc log lines, that - although part of INCLUDE_STRINGS - are not considered a gc event */
     private static final List<String> EXCLUDE_STRINGS = Arrays.asList("Cancelling concurrent GC", "[debug", "[trace", "gc,heap,coops", "gc,heap,exit");
     /** list of strings, that are gc log lines, but not a gc event -&gt; should be logged only */
@@ -199,6 +200,9 @@ public class DataReaderUnifiedJvmLogging extends AbstractDataReader {
                     updateEventDetails(context, event);
                 }
                 returnEvent = null;
+                break;
+            case TAG_GC_PHASES:
+                returnEvent = parseTail(context, event, tail);
                 break;
             case TAG_GC:
                 AbstractGCEvent<?> parentEvent = context.getPartialEventsMap().get(event.getNumber() + "");
@@ -358,8 +362,11 @@ public class DataReaderUnifiedJvmLogging extends AbstractDataReader {
                 Integer.parseInt(matcher.group(GROUP_MEMORY_BEFORE)), matcher.group(GROUP_MEMORY_BEFORE_UNIT).charAt(0), matcher.group(GROUP_MEMORY)));
         event.setPostUsed(getDataReaderTools().getMemoryInKiloByte(
                 Integer.parseInt(matcher.group(GROUP_MEMORY_AFTER)), matcher.group(GROUP_MEMORY_AFTER_UNIT).charAt(0), matcher.group(GROUP_MEMORY)));
-        event.setTotal(getDataReaderTools().getMemoryInKiloByte(
+        // If it is not ZGC
+        if (!matcher.group(GROUP_MEMORY_CURRENT_TOTAL_UNIT).equals("%")) {
+            event.setTotal(getDataReaderTools().getMemoryInKiloByte(
                 Integer.parseInt(matcher.group(GROUP_MEMORY_CURRENT_TOTAL)), matcher.group(GROUP_MEMORY_CURRENT_TOTAL_UNIT).charAt(0), matcher.group(GROUP_MEMORY)));
+        }
     }
 
     private void setDateStampIfPresent(AbstractGCEvent<?> event, String dateStampAsString) {
