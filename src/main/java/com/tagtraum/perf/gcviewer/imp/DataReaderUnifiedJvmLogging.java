@@ -74,6 +74,9 @@ public class DataReaderUnifiedJvmLogging extends AbstractDataReader {
     private static final String PATTERN_PAUSE_STRING = "([0-9]+[.,][0-9]+)ms";
     private static final String PATTERN_MEMORY_STRING = "(([0-9]+)([BKMG])(?:\\([0-9]+%\\))?->([0-9]+)([BKMG])\\(([0-9]+)([BKMG%])\\))";
 
+    private static final String PATTERN_MEMORY_ZGC_STRING = "";
+    private static final String PATTERN_MEMORY_PERCENTAGE_STRING = "([0-9]+)([BKMG]) (\\([0-9]+%\\))[ ]+";
+
     // Input: 1.070ms
     // Group 1: 1.070
     private static final Pattern PATTERN_PAUSE = Pattern.compile("^" + PATTERN_PAUSE_STRING);
@@ -117,6 +120,16 @@ public class DataReaderUnifiedJvmLogging extends AbstractDataReader {
     private static final int GROUP_REGION_BEFORE = 1;
     private static final int GROUP_REGION_AFTER = 2;
     private static final int GROUP_REGION_TOTAL = 3;
+
+    // Input: 123456M (100%)
+    // Group 1: 123456
+    // Group 2: M
+    // Group 3: 100%
+    private static final Pattern PATTERN_MEMORY_PERCENTAGE = Pattern.compile(PATTERN_MEMORY_STRING);
+
+    private static final int GROUP_MEMORY_SIZE = 1;
+    private static final int GROUP_MEMORY_UNIT = 2;
+    private static final int GROUP_MEMORY_PERCENTAGE = 3;
 
     private static final String TAG_GC = "gc";
     private static final String TAG_GC_START = "gc,start";
@@ -322,6 +335,15 @@ public class DataReaderUnifiedJvmLogging extends AbstractDataReader {
         }
     }
 
+    private void parseZGCMemoryTail(ParseContext context, AbstractGCEvent<?> event, String tail) {
+        Matcher memoryMatcher = tail != null ? PATTERN_MEMORY.matcher(tail) : null;
+        if (memoryMatcher != null && memoryMatcher.find()) {
+            setMemory(event, memoryMatcher);
+        } else {
+            getLogger().warning(String.format("Expected only memory in the end of line number %d (line=\"%s\")", in.getLineNumber(), context.getLine()));
+        }
+    }
+
     /**
      * Returns an instance of AbstractGcEvent (GCEvent or ConcurrentGcEvent) with all decorators present filled in
      * or <code>null</code> if the line could not be matched.
@@ -368,6 +390,11 @@ public class DataReaderUnifiedJvmLogging extends AbstractDataReader {
                 Integer.parseInt(matcher.group(GROUP_MEMORY_CURRENT_TOTAL)), matcher.group(GROUP_MEMORY_CURRENT_TOTAL_UNIT).charAt(0), matcher.group(GROUP_MEMORY)));
         }
     }
+
+    private void setMemoryZGC(AbstractGCEvent<?> event, Matcher matcher) {
+		event.setTotal(getDataReaderTools().getMemoryInKiloByte(
+			Integer.parseInt(matcher.group(GROUP_MEMORY_SIZE)), matcher.group(GROUP_MEMORY_UNIT).charAt(0), matcher.group(GROUP_MEMORY)));
+	}
 
     private void setDateStampIfPresent(AbstractGCEvent<?> event, String dateStampAsString) {
         // TODO remove code duplication with AbstractDataReaderSun -> move to DataReaderTools

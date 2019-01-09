@@ -5,9 +5,11 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.logging.Level;
 
+import com.tagtraum.perf.gcviewer.UnittestHelper;
 import com.tagtraum.perf.gcviewer.model.GCModel;
 import com.tagtraum.perf.gcviewer.model.GCResource;
 import com.tagtraum.perf.gcviewer.model.GcResourceFile;
@@ -18,10 +20,23 @@ import org.junit.Test;
  */
 public class TestDataReaderUJLZGC
 {
+	private GCModel getGCModelFromLogFile(String fileName) throws IOException {
+		return UnittestHelper.getGCModelFromLogFile(fileName, UnittestHelper.FOLDER.OPENJDK_UJL, DataReaderUnifiedJvmLogging.class);
+	}
 
 	@Test
-	public void testDefaultsPauseRelocateStart() throws Exception
-	{
+	public void testGcAll() throws Exception {
+		GCModel model = getGCModelFromLogFile("sample-ujl-zgc-all.txt");
+		assertThat("size", model.size(), is(10));
+		assertThat("amount of gc event types", model.getGcEventPauses().size(), is(0));
+		assertThat("amount of gc events", model.getGCPause().getN(), is(0));
+		assertThat("amount of full gc event types", model.getFullGcEventPauses().size(), is(3));
+		assertThat("amount of full gc events", model.getFullGCPause().getN(), is(3));
+		assertThat("amount of concurrent pause types", model.getConcurrentEventPauses().size(), is(7));
+	}
+
+	@Test
+	public void testDefaultsPauseRelocateStart() throws Exception {
 		TestLogHandler handler = new TestLogHandler();
 		handler.setLevel(Level.WARNING);
 		GCResource gcResource = new GcResourceFile("byteArray");
@@ -39,8 +54,7 @@ public class TestDataReaderUJLZGC
 	}
 
 	@Test
-	public void testDefaultsPauseMarkStart() throws Exception
-	{
+	public void testDefaultsPauseMarkStart() throws Exception {
 		TestLogHandler handler = new TestLogHandler();
 		handler.setLevel(Level.WARNING);
 		GCResource gcResource = new GcResourceFile("byteArray");
@@ -58,8 +72,7 @@ public class TestDataReaderUJLZGC
 	}
 
 	@Test
-	public void testDefaultsPauseMarkEnd() throws Exception
-	{
+	public void testDefaultsPauseMarkEnd() throws Exception {
 		TestLogHandler handler = new TestLogHandler();
 		handler.setLevel(Level.WARNING);
 		GCResource gcResource = new GcResourceFile("byteArray");
@@ -74,6 +87,12 @@ public class TestDataReaderUJLZGC
 		assertThat("number of warnings", handler.getCount(), is(0));
 		assertThat("number of events", model.size(), is(1));
 		assertThat("pause", model.get(0).getPause(), closeTo(0.001257, 0.00000001));
+	}
+
+	@Test
+	public void testDefaultConcurrentMark() throws Exception
+	{
+
 	}
 
 	@Test
