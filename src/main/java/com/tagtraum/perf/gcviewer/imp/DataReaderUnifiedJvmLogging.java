@@ -342,7 +342,7 @@ public class DataReaderUnifiedJvmLogging extends AbstractDataReader {
         } else {
             getLogger().warning(String.format("Expected only memory in the end of line number %d (line=\"%s\")", in.getLineNumber(), context.getLine()));
         }
-    }
+    } 
 
     /**
      * Returns an instance of AbstractGcEvent (GCEvent or ConcurrentGcEvent) with all decorators present filled in
