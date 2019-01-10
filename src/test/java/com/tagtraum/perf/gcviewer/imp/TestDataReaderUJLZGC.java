@@ -27,11 +27,11 @@ public class TestDataReaderUJLZGC
 	@Test
 	public void testGcAll() throws Exception {
 		GCModel model = getGCModelFromLogFile("sample-ujl-zgc-all.txt");
-		assertThat("size", model.size(), is(10));
-		assertThat("amount of gc event types", model.getGcEventPauses().size(), is(0));
-		assertThat("amount of gc events", model.getGCPause().getN(), is(0));
-		assertThat("amount of full gc event types", model.getFullGcEventPauses().size(), is(3));
-		assertThat("amount of full gc events", model.getFullGCPause().getN(), is(3));
+		assertThat("size", model.size(), is(11));
+		assertThat("amount of gc event types", model.getGcEventPauses().size(), is(3));
+		assertThat("amount of gc events", model.getGCPause().getN(), is(3));
+		assertThat("amount of full gc event types", model.getFullGcEventPauses().size(), is(1));
+		assertThat("amount of full gc events", model.getFullGCPause().getN(), is(1));
 		assertThat("amount of concurrent pause types", model.getConcurrentEventPauses().size(), is(7));
 	}
 
@@ -87,6 +87,24 @@ public class TestDataReaderUJLZGC
 		assertThat("number of warnings", handler.getCount(), is(0));
 		assertThat("number of events", model.size(), is(1));
 		assertThat("pause", model.get(0).getPause(), closeTo(0.001257, 0.00000001));
+	}
+
+	@Test
+	public void testHeapCapacity() throws Exception {
+		TestLogHandler handler = new TestLogHandler();
+		handler.setLevel(Level.WARNING);
+		GCResource gcResource = new GcResourceFile("byteArray");
+		gcResource.getLogger().addHandler(handler);
+		InputStream in = new ByteArrayInputStream(
+				("[205.139s][info][gc,heap     ] GC(2)  Capacity:   194560M (100%)     194560M (100%)     194560M (100%)     194560M (100%)     194560M (100%)     194560M (100%)   ")
+						.getBytes());
+
+		DataReader reader = new DataReaderUnifiedJvmLogging(gcResource, in);
+		GCModel model = reader.read();
+
+		assertThat("number of warnings", handler.getCount(), is(0));
+		assertThat("number of events", model.size(), is(1));
+		assertThat("pause", model.get(0).getTotal(), is(194560 * 1024));
 	}
 
 	@Test

@@ -650,10 +650,9 @@ public abstract class AbstractGCEvent<T extends AbstractGCEvent<T>> implements S
         public static final Type UJL_SHEN_CONCURRENT_PRECLEANING = new Type("Concurrent precleaning", Generation.TENURED, Concurrency.CONCURRENT, GcPattern.GC_MEMORY_PAUSE);
 
         // unified jvm logging zgc event types
-        // currently no generations in ZGC, all GC are full GC
-        public static final Type UJL_ZGC_RELOCATED_START = new Type("Pause Relocate Start", Generation.ALL, Concurrency.SERIAL, GcPattern.GC_PAUSE);
-        public static final Type UJL_ZGC_MARK_START = new Type("Pause Mark Start", Generation.ALL, Concurrency.SERIAL, GcPattern.GC_PAUSE);
-        public static final Type UJL_ZGC_MARK_END = new Type("Pause Mark End", Generation.ALL, Concurrency.SERIAL, GcPattern.GC_PAUSE);
+        public static final Type UJL_ZGC_RELOCATED_START = new Type("Pause Relocate Start", Generation.TENURED, Concurrency.SERIAL, GcPattern.GC_PAUSE);
+        public static final Type UJL_ZGC_MARK_START = new Type("Pause Mark Start", Generation.TENURED, Concurrency.SERIAL, GcPattern.GC_PAUSE);
+        public static final Type UJL_ZGC_MARK_END = new Type("Pause Mark End", Generation.TENURED, Concurrency.SERIAL, GcPattern.GC_PAUSE);
 
         public static final Type UJL_ZGC_CONCURRENT_MARK = new Type("Concurrent Mark", Generation.ALL, Concurrency.CONCURRENT, GcPattern.GC_PAUSE);
         public static final Type UJL_ZGC_CONCURRENT_RELOCATE = new Type("Concurrent Relocate", Generation.ALL, Concurrency.CONCURRENT, GcPattern.GC_PAUSE);
@@ -664,11 +663,22 @@ public abstract class AbstractGCEvent<T extends AbstractGCEvent<T>> implements S
         public static final Type UJL_ZGC_CONCURRENT_SELECT_RELOCATION_SET = new Type("Concurrent Select Relocation Set", Generation.ALL, Concurrency.CONCURRENT, GcPattern.GC_PAUSE);
 
         // ZGC does not GC on pause, GC is done concurrently throughout the cycle
-        public static final Type UJL_ZGC_GARBAGE_COLLECTION_WARMUP = new Type("Garbage Collection (Warmup)", Generation.OTHER, Concurrency.SERIAL, GcPattern.ZGC_GC_MEMORY);
-        public static final Type UJL_ZGC_GARBAGE_COLLECTION_ALLOCATION_RATE = new Type("Garbage Collection (Allocation Rate)", Generation.OTHER, Concurrency.SERIAL, GcPattern.ZGC_GC_MEMORY);
-        public static final Type UJL_ZGC_GARBAGE_COLLECTION_METADATA_GC_THRESHOLD = new Type("Garbage Collection (Metadata GC Threshold)", Generation.OTHER, Concurrency.SERIAL, GcPattern.ZGC_GC_MEMORY);
-        public static final Type UJL_ZGC_GARBAGE_COLLECTION_PROACTIVE = new Type("Garbage Collection (Proactive)", Generation.OTHER, Concurrency.SERIAL, GcPattern.ZGC_GC_MEMORY);
-        public static final Type UJL_ZGC_GARBAGE_COLLECTION_SYSTEM_GC = new Type("Garbage Collection (System.gc())", Generation.OTHER, Concurrency.SERIAL, GcPattern.ZGC_GC_MEMORY);
+        // currently no generations in ZGC, all GC are full GC
+        public static final Type UJL_ZGC_GARBAGE_COLLECTION_WARMUP = new Type("Garbage Collection (Warmup)", Generation.ALL, Concurrency.SERIAL, GcPattern.ZGC_MEMORY);
+        public static final Type UJL_ZGC_GARBAGE_COLLECTION_ALLOCATION_RATE = new Type("Garbage Collection (Allocation Rate)", Generation.ALL, Concurrency.SERIAL, GcPattern.ZGC_MEMORY);
+        public static final Type UJL_ZGC_GARBAGE_COLLECTION_METADATA_GC_THRESHOLD = new Type("Garbage Collection (Metadata GC Threshold)", Generation.ALL, Concurrency.SERIAL, GcPattern.ZGC_MEMORY);
+        public static final Type UJL_ZGC_GARBAGE_COLLECTION_PROACTIVE = new Type("Garbage Collection (Proactive)", Generation.ALL, Concurrency.SERIAL, GcPattern.ZGC_MEMORY);
+        public static final Type UJL_ZGC_GARBAGE_COLLECTION_SYSTEM_GC = new Type("Garbage Collection (System.gc())", Generation.ALL, Concurrency.SERIAL, GcPattern.ZGC_MEMORY);
+
+        // heap memory info
+        public static final Type UJL_ZGC_HEAP_CAPACITY = new Type("Capacity", Generation.OTHER, Concurrency.SERIAL, GcPattern.ZGC_MEMORY);
+//        public static final Type UJL_ZGC_HEAP_RESERVE = new Type("Reserve", Generation.OTHER, Concurrency.SERIAL, GcPattern.ZGC_MEMORY);
+//        public static final Type UJL_ZGC_HEAP_FREE = new Type("Free", Generation.OTHER, Concurrency.SERIAL, GcPattern.ZGC_MEMORY);
+//        public static final Type UJL_ZGC_HEAP_USED = new Type("Used", Generation.OTHER, Concurrency.SERIAL, GcPattern.ZGC_MEMORY);
+//        public static final Type UJL_ZGC_HEAP_LIVE = new Type("Live", Generation.OTHER, Concurrency.SERIAL, GcPattern.ZGC_MEMORY);
+//        public static final Type UJL_ZGC_HEAP_ALLOCATED = new Type("Allocated", Generation.OTHER, Concurrency.SERIAL, GcPattern.ZGC_MEMORY);
+//        public static final Type UJL_ZGC_HEAP_GARBAGE = new Type("Garbage", Generation.OTHER, Concurrency.SERIAL, GcPattern.ZGC_MEMORY);
+//        public static final Type UJL_ZGC_HEAP_RECLAIMED = new Type("Reclaimed", Generation.OTHER, Concurrency.SERIAL, GcPattern.ZGC_MEMORY);
 
         // IBM Types
         // TODO: are scavenge always young only??
@@ -710,11 +720,10 @@ public abstract class AbstractGCEvent<T extends AbstractGCEvent<T>> implements S
     	GC_MEMORY_PAUSE,
         /** "GC type": "# regions before"-&gt;"# regions after"[("#total regions")] ("total regions" is optional; needs a region size to calculate memory usage)*/
         GC_REGION,
+        /** "Garbage Collection (Reason)" "memory before"("percentage of total")->"memory after"("percentage of total") */
         /** [gc,heap] information block for ZGC */
         /** "memory type""memory current"("memory percentage") */
-        ZGC_MEMORY_INFO,
-        /** "Garbage Collection (Reason)" "memory before"("percentage of total")->"memory after"("percentage of total") */
-        ZGC_GC_MEMORY
+        ZGC_MEMORY
     }
 
     public enum Concurrency { CONCURRENT, SERIAL };

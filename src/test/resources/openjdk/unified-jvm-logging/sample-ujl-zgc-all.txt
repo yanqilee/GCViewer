@@ -1,3 +1,4 @@
+[201.205s][info][gc,start] GC(0) Garbage Collection (Metadata GC Threshold)
 [201.206s][info][gc,phases] GC(0) Pause Mark Start 1.279ms
 [201.211s][info][gc,phases] GC(0) Concurrent Mark 5.216ms
 [201.212s][info][gc,phases] GC(0) Pause Mark End 0.695ms
@@ -8,3 +9,5 @@
 [201.217s][info][gc,phases] GC(0) Concurrent Prepare Relocation Set 0.865ms
 [201.218s][info][gc,phases] GC(0) Pause Relocate Start 0.679ms
 [201.221s][info][gc,phases] GC(0) Concurrent Relocate 2.846ms
+[201.221s][info][gc,heap     ] GC(0)  Capacity:   194560M (100%)     194560M (100%)     194560M (100%)     194560M (100%)     194560M (100%)     194560M (100%)
+[201.221s][info][gc          ] GC(0) Garbage Collection (Metadata GC Threshold) 106M(0%)->88M(0%)
