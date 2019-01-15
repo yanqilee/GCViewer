@@ -26,25 +26,21 @@ public class TestDataReaderUJLZGC {
 
     @Test
     public void testGcAll() throws Exception {
-        GCModel model = getGCModelFromLogFile("sample-ujl-zgc-all.txt");
-        assertThat("size", model.size(), is(11));
+        GCModel model = getGCModelFromLogFile("sample-ujl-zgc-gc-all.txt");
+        assertThat("size", model.size(), is(22));
         assertThat("amount of gc event types", model.getGcEventPauses().size(), is(3));
-        assertThat("amount of gc events", model.getGCPause().getN(), is(3));
-        assertThat("amount of full gc event types", model.getFullGcEventPauses().size(), is(1));
-        assertThat("amount of full gc events", model.getFullGCPause().getN(), is(1));
+        assertThat("amount of gc events", model.getGCPause().getN(), is(6));
+        assertThat("amount of full gc event types", model.getFullGcEventPauses().size(), is(2));
+        assertThat("amount of full gc events", model.getFullGCPause().getN(), is(2));
         assertThat("amount of concurrent pause types", model.getConcurrentEventPauses().size(), is(7));
 
-//        GCModel model = getGCModelFromLogFile("SampleShenandoahBasic.txt");
-//        assertThat("size", model.size(), is(5));
-//        assertThat("amount of STW GC pause types", model.getGcEventPauses().size(), is(2));
-//        assertThat("amount of STW Full GC pause types", model.getFullGcEventPauses().size(), is(0));
-//        assertThat("amount of concurrent pause types", model.getConcurrentEventPauses().size(), is(3));
-//        assertThat("total pause time", model.getPause().getSum(), closeTo(0.001318, 0.000001));
-//        assertThat("gc pause time", model.getGCPause().getSum(), closeTo(0.001318, 0.000001));
-//        assertThat("full gc pause time", model.getFullGCPause().getSum(), is(0.0));
-//        assertThat("heap size after concurrent cycle", model.getPostConcurrentCycleHeapUsedSizes().getMax(), is(33 * 1024));
-//        assertThat("max memory freed during STW pauses", model.getFreedMemoryByGC().getMax(), is(34 * 1024));
-//
+        UnittestHelper.testMemoryPauseEvent(model.get(0),
+                "young",
+                AbstractGCEvent.Type.UJL_ZGC_MARK_START,
+                0.001279,
+                0, 0, 0,
+                AbstractGCEvent.Generation.TENURED,
+                false);
 //        AbstractGCEvent<?> initialMarkEvent = model.get(0);
 //        assertThat("isInitialMark", initialMarkEvent.isInitialMark(), is(true));
 //
@@ -67,12 +63,22 @@ public class TestDataReaderUJLZGC {
         assertThat("amount of concurrent pause types", model.getConcurrentEventPauses().size(), is(0));
 
         AbstractGCEvent<?> metadataGcThresholdEvent = model.get(0);
-        assertThat("Metadata GC Threshold heap before", metadataGcThresholdEvent.getPreUsed(), is(106 * 1024));
-        assertThat("Metadata GC Threshold heap after", metadataGcThresholdEvent.getPostUsed(), is(88 * 1024));
+        UnittestHelper.testMemoryPauseEvent(metadataGcThresholdEvent,
+                "Metadata GC Threshold heap",
+                AbstractGCEvent.Type.UJL_ZGC_GARBAGE_COLLECTION_METADATA_GC_THRESHOLD,
+                0,
+                1024 * 106, 1024 * 88, 0,
+                AbstractGCEvent.Generation.ALL,
+                true);
 
         AbstractGCEvent<?> warmupEvent = model.get(1);
-        assertThat("Warmup heap before", warmupEvent.getPreUsed(), is(208 * 1024));
-        assertThat("Warmup heap after", warmupEvent.getPostUsed(), is(164 * 1024));
+        UnittestHelper.testMemoryPauseEvent(warmupEvent,
+                "Warmup heap",
+                AbstractGCEvent.Type.UJL_ZGC_GARBAGE_COLLECTION_WARMUP,
+                0,
+                1024 * 208, 1024 * 164, 0,
+                AbstractGCEvent.Generation.ALL,
+                true);
 
         AbstractGCEvent<?> proactiveEvent = model.get(2);
         assertThat("Proactive heap before", proactiveEvent.getPreUsed(), is(19804 * 1024));
@@ -158,86 +164,4 @@ public class TestDataReaderUJLZGC {
         assertThat("number of events", model.size(), is(1));
         assertThat("pause", model.get(0).getTotal(), is(194560 * 1024));
     }
-
-    @Test
-    public void testDefaultConcurrentMark() throws Exception {
-
-    }
-
-    @Test
-    public void testDefaultGcWarmup() throws Exception {
-        TestLogHandler handler = new TestLogHandler();
-        handler.setLevel(Level.WARNING);
-        GCResource gcResource = new GcResourceFile("byteArray");
-        gcResource.getLogger().addHandler(handler);
-        InputStream in = new ByteArrayInputStream(
-                ("[1,048s][info][gc ] GC(1) Garbage Collection (Warmup) 208M(20%)->164M(16%)")
-                        .getBytes());
-
-        DataReader reader = new DataReaderUnifiedJvmLogging(gcResource, in);
-        GCModel model = reader.read();
-
-        assertThat("number of warnings", handler.getCount(), is(0));
-        assertThat("number of events", model.size(), is(1));
-        assertThat("heap before", model.get(0).getPreUsed(), is(208 * 1024));
-        assertThat("heap after", model.get(0).getPostUsed(), is(164 * 1024));
-    }
-
-    @Test
-    public void testDefaultGcAllocationRate() throws Exception {
-        TestLogHandler handler = new TestLogHandler();
-        handler.setLevel(Level.WARNING);
-        GCResource gcResource = new GcResourceFile("byteArray");
-        gcResource.getLogger().addHandler(handler);
-        InputStream in = new ByteArrayInputStream(
-                ("[3,167s][info][gc ] GC(3) Garbage Collection (Allocation Rate) 502M(49%)->716M(70%)")
-                        .getBytes());
-
-        DataReader reader = new DataReaderUnifiedJvmLogging(gcResource, in);
-        GCModel model = reader.read();
-
-        assertThat("number of warnings", handler.getCount(), is(0));
-        assertThat("number of events", model.size(), is(1));
-        assertThat("heap before", model.get(0).getPreUsed(), is(502 * 1024));
-        assertThat("heap after", model.get(0).getPostUsed(), is(716 * 1024));
-    }
-
-    @Test
-    public void testDefaultGcMetadataGCThreshold() throws Exception {
-        TestLogHandler handler = new TestLogHandler();
-        handler.setLevel(Level.WARNING);
-        GCResource gcResource = new GcResourceFile("byteArray");
-        gcResource.getLogger().addHandler(handler);
-        InputStream in = new ByteArrayInputStream(
-                ("[2.740s][info][gc          ] GC(3) Garbage Collection (Metadata GC Threshold) 958M(0%)->348M(0%)")
-                        .getBytes());
-
-        DataReader reader = new DataReaderUnifiedJvmLogging(gcResource, in);
-        GCModel model = reader.read();
-
-        assertThat("number of warnings", handler.getCount(), is(0));
-        assertThat("number of events", model.size(), is(1));
-        assertThat("heap before", model.get(0).getPreUsed(), is(958 * 1024));
-        assertThat("heap after", model.get(0).getPostUsed(), is(348 * 1024));
-    }
-
-    @Test
-    public void testDefaultGcProactive() throws Exception {
-        TestLogHandler handler = new TestLogHandler();
-        handler.setLevel(Level.WARNING);
-        GCResource gcResource = new GcResourceFile("byteArray");
-        gcResource.getLogger().addHandler(handler);
-        InputStream in = new ByteArrayInputStream(
-                ("[2.607s][info][gc          ] GC(4) Garbage Collection (Proactive) 19804M(10%)->20212M(10%)")
-                        .getBytes());
-
-        DataReader reader = new DataReaderUnifiedJvmLogging(gcResource, in);
-        GCModel model = reader.read();
-
-        assertThat("number of warnings", handler.getCount(), is(0));
-        assertThat("number of events", model.size(), is(1));
-        assertThat("heap before", model.get(0).getPreUsed(), is(19804 * 1024));
-        assertThat("heap after", model.get(0).getPostUsed(), is(20212 * 1024));
-    }
-
 }

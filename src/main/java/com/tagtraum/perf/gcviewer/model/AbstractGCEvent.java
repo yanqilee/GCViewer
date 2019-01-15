@@ -671,14 +671,7 @@ public abstract class AbstractGCEvent<T extends AbstractGCEvent<T>> implements S
         public static final Type UJL_ZGC_GARBAGE_COLLECTION_SYSTEM_GC = new Type("Garbage Collection (System.gc())", Generation.ALL, Concurrency.SERIAL, GcPattern.ZGC_MEMORY);
 
         // heap memory info
-        public static final Type UJL_ZGC_HEAP_CAPACITY = new Type("Capacity", Generation.OTHER, Concurrency.SERIAL, GcPattern.ZGC_MEMORY);
-//        public static final Type UJL_ZGC_HEAP_RESERVE = new Type("Reserve", Generation.OTHER, Concurrency.SERIAL, GcPattern.ZGC_MEMORY);
-//        public static final Type UJL_ZGC_HEAP_FREE = new Type("Free", Generation.OTHER, Concurrency.SERIAL, GcPattern.ZGC_MEMORY);
-//        public static final Type UJL_ZGC_HEAP_USED = new Type("Used", Generation.OTHER, Concurrency.SERIAL, GcPattern.ZGC_MEMORY);
-//        public static final Type UJL_ZGC_HEAP_LIVE = new Type("Live", Generation.OTHER, Concurrency.SERIAL, GcPattern.ZGC_MEMORY);
-//        public static final Type UJL_ZGC_HEAP_ALLOCATED = new Type("Allocated", Generation.OTHER, Concurrency.SERIAL, GcPattern.ZGC_MEMORY);
-//        public static final Type UJL_ZGC_HEAP_GARBAGE = new Type("Garbage", Generation.OTHER, Concurrency.SERIAL, GcPattern.ZGC_MEMORY);
-//        public static final Type UJL_ZGC_HEAP_RECLAIMED = new Type("Reclaimed", Generation.OTHER, Concurrency.SERIAL, GcPattern.ZGC_MEMORY);
+        public static final Type UJL_ZGC_HEAP_CAPACITY = new Type("Capacity", Generation.TENURED, Concurrency.SERIAL, GcPattern.ZGC_MEMORY);
 
         // IBM Types
         // TODO: are scavenge always young only??

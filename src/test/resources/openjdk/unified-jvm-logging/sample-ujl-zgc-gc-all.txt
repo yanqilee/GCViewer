@@ -1,4 +1,4 @@
-[0.995s][info][gc     ] Using The Z Garbage Collector
+[0.995s][info][gc] Using The Z Garbage Collector
 [1.205s][info][gc,start] GC(0) Garbage Collection (Metadata GC Threshold)
 [1.206s][info][gc,phases] GC(0) Pause Mark Start 1.279ms
 [1.211s][info][gc,phases] GC(0) Concurrent Mark 5.216ms
@@ -10,8 +10,9 @@
 [1.217s][info][gc,phases] GC(0) Concurrent Prepare Relocation Set 0.865ms
 [1.218s][info][gc,phases] GC(0) Pause Relocate Start 0.679ms
 [1.221s][info][gc,phases] GC(0) Concurrent Relocate 2.846ms
-[1.221s][info][gc,heap     ] GC(0)  Capacity:   194560M (100%)     194560M (100%)     194560M (100%)     194560M (100%)     194560M (100%)     194560M (100%)
-[1.221s][info][gc          ] GC(0) Garbage Collection (Metadata GC Threshold) 106M(0%)->88M(0%)
+[1.221s][info][gc,heap  ] GC(0)  Capacity:   194560M (100%)     194560M (100%)     194560M (100%)     194560M (100%)     194560M (100%)     194560M (100%)
+[1.221s][info][gc       ] GC(0) Garbage Collection (Metadata GC Threshold) 106M(0%)->88M(0%)
+[1.805s][info][gc,start ] GC(1) Garbage Collection (Warmup)
 [1,806s][info][gc,phases] GC(1) Pause Mark Start 0,103ms
 [1,994s][info][gc,phases] GC(1) Concurrent Mark 187,553ms
 [1,994s][info][gc,phases] GC(1) Pause Mark End 0,096ms
@@ -22,17 +23,5 @@
 [2,001s][info][gc,phases] GC(1) Concurrent Prepare Relocation Set 2,673ms
 [2,003s][info][gc,phases] GC(1) Pause Relocate Start 0,144ms
 [2,047s][info][gc,phases] GC(1) Concurrent Relocate 44,026ms
-[2,048s][info][gc ] GC(1) Garbage Collection (Warmup) 208M(20%)->164M(16%)
-[268.062s][info][gc,start    ] GC(4) Garbage Collection (Proactive)
-[268.066s][info][gc,phases   ] GC(4) Pause Mark Start 1.766ms
-[270.655s][info][gc,phases   ] GC(4) Concurrent Mark 2588.943ms
-[270.660s][info][gc,phases   ] GC(4) Pause Mark End 4.900ms
-[270.662s][info][gc,phases   ] GC(4) Concurrent Process Non-Strong References 1.839ms
-[270.665s][info][gc,phases   ] GC(4) Concurrent Reset Relocation Set 2.870ms
-[270.665s][info][gc,phases   ] GC(4) Concurrent Destroy Detached Pages 0.099ms
-[270.667s][info][gc,phases   ] GC(4) Concurrent Select Relocation Set 2.110ms
-[271.603s][info][gc,phases   ] GC(4) Concurrent Prepare Relocation Set 935.582ms
-[271.608s][info][gc,phases   ] GC(4) Pause Relocate Start 5.434ms
-[274.607s][info][gc,phases   ] GC(4) Concurrent Relocate 2998.905ms
-[274.607s][info][gc,heap     ] GC(4)  Capacity:   194560M (100%)     194560M (100%)     194560M (100%)     194560M (100%)     194560M (100%)     194560M (100%)
-[274.607s][info][gc          ] GC(4) Garbage Collection (Proactive) 19804M(10%)->20212M(10%)
+[2.047s][info][gc,heap  ] GC(1)  Capacity:   194560M (100%)     194560M (100%)     194560M (100%)     194560M (100%)     194560M (100%)     194560M (100%)
+[2,048s][info][gc       ] GC(1) Garbage Collection (Warmup) 208M(0%)->164M(0%)
